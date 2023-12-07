@@ -1,0 +1,10 @@
+day: 1
+
+data:
+  input: src/day_${day}/data/input.txt
+  output: src/day_${day}/data/output.txt
+
+logging:
+  date_format: '%Y-%m-%d %H:%M:%S'
+  format: '[%(asctime)s] %(message)s'
+  level: DEBUG

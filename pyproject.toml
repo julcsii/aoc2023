@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "aoc2023"
+version = "0.1.0"
+authors = ["Julia Hermann <julia.hermann@magenta.at>"]
+readme = "README.md"
+description = "Coding problems from the Advent of Code for 2023."
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+python-dotenv = "^1.0.0"
+omegaconf = "^2.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
