@@ -9,6 +9,7 @@ from src.utils.io import read_txt
 
 cfg = OmegaConf.load("config.yaml")
 
+
 logging.basicConfig(
     stream=sys.stdout,
     format=cfg.logging.format,
@@ -18,7 +19,16 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def main(cfg):
+def main(cfg: OmegaConf) -> None:
+    """
+    Main function to execute the program.
+
+    Args:
+        cfg (OmegaConf): The configuration.
+
+    Returns:
+        None
+    """
     rows_to_print = 10
     input_list = read_txt(cfg.data.input)
     logger.debug(input_list[:rows_to_print])
@@ -31,9 +41,28 @@ def main(cfg):
 
 
 def extract_calibration_codes(inputs: List[str]) -> List[int]:
+    """
+    Extracts calibration codes from a list of strings.
+
+    Args:
+        inputs (List[str]): List of input strings.
+
+    Returns:
+        List[int]: List of extracted calibration codes.
+    """
     return [code for i in inputs if (code := extract_calibration_code(i)) is not None]
 
+
 def extract_calibration_code(input_str: str) -> Optional[int]:
+    """
+    Extracts a calibration code from a string.
+
+    Args:
+        input_str (str): Input string.
+
+    Returns:
+        Optional[int]: Extracted calibration code or None if not found.
+    """
     digits_extracted = []
     text_chars = ""
 
@@ -53,7 +82,17 @@ def extract_calibration_code(input_str: str) -> Optional[int]:
         return int(f"{digits_extracted[0]}{digits_extracted[-1]}")
     return None
 
+
 def extract_text_digits(input_string: str) -> List[int]:
+    """
+    Extracts text digits from a string.
+
+    Args:
+        input_string (str): Input string.
+
+    Returns:
+        List[int]: List of extracted text digits.
+    """
     text_to_digit_mapping = {
         "one": "1",
         "two": "2",
@@ -70,8 +109,8 @@ def extract_text_digits(input_string: str) -> List[int]:
 
     pattern = re.compile('|'.join(map(re.escape, text_to_digit_mapping.keys())), re.IGNORECASE)
     matches = re.findall(pattern, input_string, overlapped=True)
-
     return [int(text_to_digit_mapping[match.lower()]) for match in matches]
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main(cfg)
