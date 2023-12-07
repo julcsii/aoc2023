@@ -17,6 +17,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+def main(cfg):
+    rows_to_print = 10
+    input_list = read_txt(cfg.data.input)
+    logger.debug(input_list[:rows_to_print])
+
+    calibration_codes = extract_calibration_codes(input_list)
+    logger.debug(calibration_codes[:rows_to_print])
+
+    total_sum = sum(calibration_codes)
+    logger.info(total_sum)
+
+
 def extract_calibration_codes(inputs: List[str]) -> List[int]:
     return [code for i in inputs if (code := extract_calibration_code(i)) is not None]
 
@@ -60,12 +73,5 @@ def extract_text_digits(input_string: str) -> List[int]:
 
     return [int(text_to_digit_mapping[match.lower()]) for match in matches]
 
-rows_to_print = 10
-input_list = read_txt(cfg.data.input)
-logger.debug(input_list[:rows_to_print])
-
-calibration_codes = extract_calibration_codes(input_list)
-logger.debug(calibration_codes[:rows_to_print])
-
-total_sum = sum(calibration_codes)
-logger.info(total_sum)
+if __name__=="__main__":
+    main(cfg)
