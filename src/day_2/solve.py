@@ -39,10 +39,13 @@ def main(cfg: OmegaConf) -> None:
     games_df = pd.DataFrame(games).fillna(0)
     logger.debug(games_df.head(5))
 
-    possible_games = get_possible_games(games_df, 12, 13, 14)
-    logger.debug(possible_games.head())
+    max_colors_per_game = games_df.groupby("game_id").agg("max")
+    logger.debug(max_colors_per_game.head())
 
-    solution = possible_games.reset_index()["game_id"].astype("int").sum()
+    max_colors_per_game["game_power"] = max_colors_per_game.apply(lambda x: x["red"]*x["green"]*x["blue"], axis=1)
+    logger.debug(max_colors_per_game.head())
+
+    solution = max_colors_per_game["game_power"].sum()
     logger.info(solution)
 
 
@@ -53,15 +56,6 @@ def parse_games(list_of_games: List[str]):
         game_data = parse_game(game)
         parsed_games =  parsed_games + game_data
     return parsed_games
-
-
-def get_possible_games(games_df: pd.DataFrame, max_red, max_green, max_blue) -> pd.DataFrame:
-    max_colors_per_game = games_df.groupby("game_id").agg("max")
-    red_limit = max_colors_per_game["red"] <= max_red
-    green_limit = max_colors_per_game["green"] <= max_green
-    blue_limit = max_colors_per_game["blue"] <= max_blue
-    possible_games = red_limit & green_limit & blue_limit
-    return max_colors_per_game[possible_games]
 
 
 def parse_game(game: str) -> List[Dict[str, int]]:
