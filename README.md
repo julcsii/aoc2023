@@ -10,8 +10,10 @@ Coding problems from the Advent of Code for 2023.
 
 ## Setup
 
-1. Install dependencies: poetry install (This will create a poetry.lock file, which contains exact versions of the dependencies and should be committed to the repo.)
-2. Activate environment: poetry shell
+1. Install dependencies: `poetry install` (This will create a poetry.lock file, which contains exact versions of the dependencies and should be committed to the repo.)
+2. Activate environment: `poetry shell`
+
+To add dependencies simply type: `poetry add pandas`. More on how to use Poetry here: https://python-poetry.org/docs/
 
 
 
