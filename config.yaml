@@ -1,4 +1,4 @@
-day: 1
+day: 2
 
 data:
   input: src/day_${day}/data/input.txt
