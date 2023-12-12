@@ -2,8 +2,10 @@ import logging
 import sys
 from typing import List
 
+import geopandas as gpd
 from omegaconf import OmegaConf
-from shapely import LineString
+import pandas as pd
+from shapely import LineString, Polygon, geometry
 
 from src.utils.io import read_txt
 
@@ -43,22 +45,40 @@ def main(cfg: OmegaConf) -> None:
     Put these into two geopandas df and do overlay
     """
 
-    solution = get_parts_shape(input_list)
-   
-    logger.info(solution[0][1])
+    lines = get_parts_shape(input_list)
+    lines_gdf = gpd.GeoDataFrame(lines, columns=["number", "geometry"])
+    logger.info(lines_gdf.head())
+
+    rectangles = get_special_character_shape(input_list)
+    rectangles_gdf = gpd.GeoDataFrame(rectangles, columns=["char", "geometry"])
+    logger.info(rectangles_gdf.head())
+
+    intersection_gdf = gpd.overlay(lines_gdf, rectangles_gdf, how="intersection", keep_geom_type=False)
+    solution = intersection_gdf["number"].astype(int).sum()
+    logger.info(solution)
 
 
-def get_special_character_shape(input_row: str) -> List[int]:
-    pass
+def get_special_character_shape(inputs: List[str]) -> List[int]:
+    shapes = []
+    for row_num, row in enumerate(inputs):
+        for col_num, char in enumerate(row):
+            if (not char.isalnum()) and (char != "."):
+                # create a rectangle polygon around the special character from a bounding box
+                xmin, ymin = (row_num-1, col_num-1)
+                xmax, ymax = (row_num+1, col_num+1)
+                bbox = xmin, ymin, xmax, ymax
+                rectangle = geometry.box(*bbox, ccw=True)
+                shape = (char, rectangle)
+                shapes.append(shape)
+    return shapes
+
 
 def get_parts_shape(inputs: List[str]):
     shapes = []
     for row_num, row in enumerate(inputs):
-        logger.info(row)
         number_start_idx = None
         number = ""
         for number_end_idx, char in enumerate(row):
-            logger.info(char)
             if char.isnumeric():
                 # logger.info(char)
                 if number_start_idx is None:
@@ -70,11 +90,9 @@ def get_parts_shape(inputs: List[str]):
             if ((not char.isnumeric()) and (len(number) > 0)) or ((len(number) > 0) and (number_end_idx == len(row)-1)):
                 line = LineString([[row_num, number_start_idx], [row_num, number_end_idx-1]])
                 shape = (number, line)
-                logger.info(shape)
                 shapes.append(shape)
                 number = ""
                 number_start_idx = None
-        break
     return shapes
 
 

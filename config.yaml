@@ -1,7 +1,7 @@
 day: 3
 
 data:
-  input: src/day_${day}/data/sample_input.txt
+  input: src/day_${day}/data/input.txt
   output: src/day_${day}/data/output.txt
 
 logging:
